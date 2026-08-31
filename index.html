@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Salud Especializado</title>
+    <title>Sistema de Programación de Citas</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -12,193 +12,141 @@
         
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
-            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
+            background: linear-gradient(135deg, #f0f4f8 0%, #d9e2ec 100%);
             min-height: 100vh;
-            position: relative;
-            overflow-x: hidden;
-        }
-
-        /* Elementos decorativos de fondo modernos */
-        body::before, body::after {
-            content: '';
-            position: absolute;
-            border-radius: 50%;
-            z-index: -1;
-            filter: blur(90px);
-            opacity: 0.4;
-        }
-        body::before {
-            width: 350px;
-            height: 350px;
-            background: #6366f1;
-            top: -5%;
-            right: -5%;
-        }
-        body::after {
-            width: 400px;
-            height: 400px;
-            background: #a855f7;
-            bottom: -10%;
-            left: -10%;
         }
 
         .glass-card {
-            background: rgba(255, 255, 255, 0.75);
-            backdrop-filter: blur(24px);
-            -webkit-backdrop-filter: blur(24px);
-            border: 1px solid rgba(255, 255, 255, 0.6);
-            box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.05), 
-                        0 10px 20px -5px rgba(0, 0, 0, 0.03);
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.7);
+            box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.07);
         }
 
         .input-premium {
-            background: rgba(255, 255, 255, 0.6);
-            border: 2px solid #e2e8f0;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid #cbd5e1;
+            transition: all 0.3s ease;
         }
 
         .input-premium:focus {
             background: #ffffff;
-            border-color: #6366f1;
-            box-shadow: 0 0 0 5px rgba(99, 102, 241, 0.15);
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.15);
         }
-
-        .step-badge {
-            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
-        }
-
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(16px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .animate-fade-in { animation: fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
     </style>
 </head>
-<body class="flex items-center justify-center p-4 py-12">
+<body class="flex items-center justify-center p-4 py-8">
 
-    <div class="glass-card w-full max-w-2xl rounded-[2.5rem] overflow-hidden transition-all duration-300">
+    <div class="glass-card w-full max-w-2xl rounded-[2.5rem] overflow-hidden">
         
-        <div class="relative bg-gradient-to-br from-indigo-600 via-indigo-700 to-purple-800 p-10 text-white overflow-hidden">
-            <div class="relative z-10 space-y-3">
-                <div class="flex items-center gap-2">
-                    <span class="bg-white/10 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-extrabold tracking-widest uppercase text-indigo-200 border border-white/10">
-                        <i class="fas fa-layer-group mr-1"></i> Módulo de Citas
-                    </span>
-                </div>
-                <h1 class="text-4xl font-extrabold tracking-tight leading-none">
-                    Salud Madres <br>
-                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-200 to-purple-200 text-2xl font-semibold opacity-90 block mt-2">Odontología </span>
-                </h1>
-                <div class="pt-2 flex flex-col gap-1 text-sm text-indigo-100/90 font-medium border-t border-white/10">
-                    <p class="flex items-center gap-2"><i class="far fa-calendar-alt opacity-70"></i> <strong>Fecha:</strong> Agosto 2026 | <i class="far fa-clock opacity-70"></i> <strong>Hora:</strong> ..</p>
-                </div>
-            </div>
-            <div class="absolute -top-12 -right-12 w-48 h-48 bg-purple-500/20 rounded-full blur-2xl"></div>
-            <div class="absolute bottom-[-50px] left-[-20px] w-36 h-36 bg-indigo-400/20 rounded-full blur-xl"></div>
+        <!-- Header -->
+        <div class="bg-gradient-to-r from-indigo-700 via-indigo-800 to-purple-900 p-8 text-white relative">
+            <span class="bg-white/10 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider border border-white/10">
+                <i class="fas fa-hospital-user mr-1"></i> Módulo de Programación
+            </span>
+            <h1 class="text-3xl font-extrabold mt-3">Agendamiento de Citas</h1>
+            <p class="text-indigo-200 text-xs mt-1">Valide la identificación del paciente para continuar</p>
         </div>
 
-        <form id="appointmentForm" class="p-8 md:p-10 space-y-8">
+        <form id="appointmentForm" class="p-6 md:p-8 space-y-6">
             
-            <div class="space-y-4">
-                <div class="flex items-center gap-3">
-                    <div class="step-badge w-8 h-8 rounded-xl flex items-center justify-center text-white text-xs font-bold shadow-md shadow-indigo-200">1</div>
-                    <h2 class="font-bold text-slate-800 uppercase text-sm tracking-wider">Identificación del paciente</h2>
-                </div>
-                
-                <div class="relative group">
-                    <label class="text-[11px] font-extrabold text-indigo-600 uppercase mb-2 block ml-1 tracking-wide">Registre el DNI</label>
-                    <div class="flex gap-3">
-                        <div class="relative flex-1">
-                            <i class="fas fa-id-card absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-500 transition-colors text-lg"></i>
-                            <input type="text" id="dniInput" required maxlength="8"
-                                class="w-full pl-12 pr-4 py-4 rounded-2xl outline-none input-premium text-xl font-bold text-slate-700 placeholder-slate-300"
-                                placeholder="00000000">
-                        </div>
-                        <button type="button" onclick="buscarDatosProfesional()" 
-                            class="bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-700 hover:to-indigo-800 text-white w-20 rounded-2xl transition-all shadow-lg shadow-indigo-200 flex items-center justify-center hover:scale-[1.03] active:scale-[0.97]">
-                            <i class="fas fa-search text-xl"></i>
-                        </button>
+            <!-- Paso 1: Validación DNI -->
+            <div class="space-y-3">
+                <label class="text-xs font-extrabold text-indigo-700 uppercase tracking-wider block">1. Identificación del Paciente</label>
+                <div class="flex gap-2">
+                    <div class="relative flex-1">
+                        <i class="fas fa-id-card absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                        <input type="text" id="dniInput" maxlength="8" required
+                            class="w-full pl-11 pr-4 py-3.5 rounded-2xl outline-none input-premium font-bold text-slate-800"
+                            placeholder="Ingrese DNI del paciente">
                     </div>
-                </div>
-            </div>
-
-            <div id="resultPanel" class="hidden animate-fade-in space-y-8">
-                
-                <div class="space-y-4">
-                    <div class="flex items-center gap-3">
-                        <div class="step-badge w-8 h-8 rounded-xl flex items-center justify-center text-white text-xs font-bold shadow-md shadow-indigo-200">2</div>
-                        <h2 class="font-bold text-slate-800 uppercase text-sm tracking-wider">Datos Filiatorios</h2>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="col-span-full bg-white/60 border border-slate-100 p-5 rounded-3xl shadow-sm backdrop-blur-sm">
-                            <span class="text-[10px] font-extrabold text-slate-400 uppercase block mb-1 tracking-wide">Nombre y Apellidos</span>
-                            <input type="text" id="nombre_madre" readonly class="w-full text-lg font-bold text-slate-800 outline-none bg-transparent">
-                        </div>
-                        
-                        <div class="bg-white/60 border border-slate-100 p-5 rounded-3xl shadow-sm flex items-center gap-4 backdrop-blur-sm">
-                            <div class="w-11 h-11 bg-emerald-50 rounded-xl flex items-center justify-center text-emerald-600 shadow-inner">
-                                <i class="fas fa-phone"></i>
-                            </div>
-                            <div class="flex-1">
-                                <span class="text-[10px] font-extrabold text-slate-400 uppercase block tracking-wide">Celular</span>
-                                <input type="text" id="celular" readonly class="w-full font-bold text-slate-800 outline-none bg-transparent">
-                            </div>
-                        </div>
-
-                        <div class="bg-white/60 border border-slate-100 p-5 rounded-3xl shadow-sm flex items-center gap-4 backdrop-blur-sm">
-                            <div class="w-11 h-11 bg-blue-50 rounded-xl flex items-center justify-center text-blue-600 shadow-inner">
-                                <i class="fas fa-map-marker-alt"></i>
-                            </div>
-                            <div class="flex-1">
-                                <span class="text-[10px] font-extrabold text-slate-400 uppercase block tracking-wide">Domicilio</span>
-                                <input type="text" id="domicilio" readonly class="w-full font-bold text-slate-800 outline-none bg-transparent text-xs text-slate-600">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <input type="hidden" id="dni_madre_final">
-                <input type="hidden" id="estado_civil" value="Georeferenciado">
-
-                <div class="pt-6 border-t border-dashed border-slate-200">
-                    <div class="flex items-center gap-3 mb-4">
-                        <div class="step-badge w-8 h-8 rounded-xl flex items-center justify-center text-white text-xs font-bold shadow-md shadow-indigo-200">3</div>
-                        <h2 class="font-bold text-slate-800 uppercase text-sm tracking-wider">Selección de Turno</h2>
-                    </div>
-                    
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3"> 
-                        <label class="relative cursor-pointer group">
-                            <input type="radio" name="turno" value="Mañana" class="peer hidden" checked>
-                            <div class="p-4 rounded-2xl border-2 border-slate-100 bg-white/50 text-center peer-checked:border-indigo-600 peer-checked:bg-indigo-50/50 transition-all group-hover:border-slate-200 shadow-sm flex items-center justify-center gap-3">
-                                <span class="text-2xl">☁️</span>
-                                <span class="font-bold text-slate-700 peer-checked:text-indigo-700">--</span>
-                            </div>
-                        </label>
-                        <label class="relative cursor-pointer group">
-                            <input type="radio" name="turno" value="Tarde" class="peer hidden">
-                            <div class="p-4 rounded-2xl border-2 border-slate-100 bg-white/50 text-center peer-checked:border-indigo-600 peer-checked:bg-indigo-50/50 transition-all group-hover:border-slate-200 shadow-sm flex items-center justify-center gap-3">
-                                <span class="text-2xl">☀️</span>
-                                <span class="font-bold text-slate-700 peer-checked:text-indigo-700">Turno Tarde</span>
-                            </div>
-                        </label>
-                    </div>
-                </div>
-
-                <div class="pt-4">
-                    <button type="button" id="btnCitaCompleta" onclick="procesarFormularioFinal()"
-                        class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white py-4.5 rounded-2xl font-bold text-lg shadow-xl shadow-indigo-100 transition-all transform active:scale-[0.99] flex items-center justify-center gap-3">
-                        <i class="fas fa-calendar-check"></i> AGENDAR CITA
+                    <button type="button" onclick="validarConsultaDNI()" 
+                        class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 rounded-2xl font-bold transition-all flex items-center gap-2 shadow-lg shadow-indigo-100">
+                        <i class="fas fa-search"></i> Validar
                     </button>
                 </div>
             </div>
 
-            <div id="initialHelp" class="text-center py-12 text-slate-400 transition-all duration-300">
-                <div class="inline-flex w-16 h-16 bg-white rounded-2xl items-center justify-center shadow-md mb-4 text-indigo-500">
-                    <i class="fas fa-fingerprint text-3xl"></i>
+            <!-- Panel Datos y Cita -->
+            <div id="resultPanel" class="hidden space-y-6 pt-4 border-t border-slate-200">
+                
+                <!-- Datos Filiatorios -->
+                <div class="space-y-4">
+                    <label class="text-xs font-extrabold text-indigo-700 uppercase tracking-wider block">2. Datos del Paciente</label>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="col-span-full">
+                            <label class="text-[11px] font-semibold text-slate-500 uppercase">Nombres y Apellidos</label>
+                            <input type="text" id="nombre_paciente" readonly class="w-full p-3 rounded-xl bg-slate-100 font-bold text-slate-800 outline-none border border-slate-200">
+                        </div>
+
+                        <div>
+                            <label class="text-[11px] font-semibold text-slate-500 uppercase">Fecha Nacimiento (DD/MM/YYYY)</label>
+                            <input type="text" id="fecha_nacimiento" placeholder="01/01/2020" required class="w-full p-3 rounded-xl input-premium font-semibold text-slate-800 outline-none">
+                        </div>
+
+                        <div>
+                            <label class="text-[11px] font-semibold text-slate-500 uppercase">N° Celular</label>
+                            <input type="text" id="celular" required class="w-full p-3 rounded-xl input-premium font-semibold text-slate-800 outline-none">
+                        </div>
+
+                        <div class="col-span-full">
+                            <label class="text-[11px] font-semibold text-slate-500 uppercase">Edad del Paciente</label>
+                            <select id="edad" required class="w-full p-3 rounded-xl input-premium font-semibold text-slate-800 outline-none">
+                                <option value="" disabled selected>Seleccione opción</option>
+                                <option value="recien nacido">Recién Nacido</option>
+                                <option value="menor de un año">Menor de 1 Año</option>
+                                <option value="un año">1 Año</option>
+                                <option value="dos años">2 Años</option>
+                                <option value="tres años">3 Años</option>
+                                <option value="cuatro años">4 Años</option>
+                                <option value="adulto">Adulto</option>
+                            </select>
+                        </div>
+                    </div>
                 </div>
-                <p class="text-sm font-semibold text-slate-600">Consulte el DNI</p>
-                <p class="text-xs text-slate-400 mt-1">Verificando en tiempo real.</p>
+
+                <!-- Programación -->
+                <div class="space-y-4 pt-4 border-t border-dashed border-slate-200">
+                    <label class="text-xs font-extrabold text-indigo-700 uppercase tracking-wider block">3. Programación de la Cita</label>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <label class="text-[11px] font-semibold text-slate-500 uppercase">Consultorio</label>
+                            <select id="consultorio" onchange="actualizarFechasDisponibles()" required class="w-full p-3 rounded-xl input-premium font-semibold text-slate-800 outline-none">
+                                <option value="" disabled selected>Cargando...</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="text-[11px] font-semibold text-slate-500 uppercase">Fecha Cita</label>
+                            <select id="fecha_cita" onchange="actualizarHorasDisponibles()" required class="w-full p-3 rounded-xl input-premium font-semibold text-slate-800 outline-none">
+                                <option value="" disabled selected>Seleccione Consultorio</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="text-[11px] font-semibold text-slate-500 uppercase">Hora Atención</label>
+                            <select id="hora_atencion" required class="w-full p-3 rounded-xl input-premium font-semibold text-slate-800 outline-none">
+                                <option value="" disabled selected>Seleccione Fecha</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Botón Agendar -->
+                <button type="button" id="btnAgendar" onclick="agendarCitaFinal()"
+                    class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white py-4 rounded-2xl font-bold text-lg shadow-xl shadow-indigo-100 transition-all">
+                    <i class="fas fa-calendar-check mr-2"></i> AGENDAR CITA
+                </button>
+            </div>
+
+            <!-- Ayuda Inicial -->
+            <div id="initialHelp" class="text-center py-10 text-slate-400">
+                <i class="fas fa-search-location text-4xl mb-3 text-indigo-400"></i>
+                <p class="text-sm font-semibold text-slate-600">Ingrese el DNI del paciente</p>
+                <p class="text-xs text-slate-400 mt-1">Solo los registros autorizados podrán seleccionar cita.</p>
             </div>
 
         </form>
@@ -206,15 +154,18 @@
 
     <script>
         const URL_CONSULTA = "https://script.google.com/macros/s/AKfycbzFJPWYyiVo1d5lJnG6LtRRkCp6pOyvfvMbApsa1GWTr02m4b2NLLvV7XyKOIyPVVcCmg/exec";
-        const URL_DESTINO = "https://script.google.com/macros/s/AKfycbwpVJo0qneJUyws7EqYtW8mecLeYmOWu3yd5q_wSMy9gLRSZea-jN8HaWJOFg0EyZVjOQ/exec";
+        const URL_DESTINO  = "https://script.google.com/macros/s/AKfycbxUkxJB2Yv9naEFRcFMoPs1ZbgYDcD4e_jdqABLPj0vx65Z7wNsmouECTTiC8fSvfdVuA/exec";
 
-        async function buscarDatosProfesional() {
+        let programaData = [];
+
+        // 1. Validar DNI en la URL de consulta
+        async function validarConsultaDNI() {
             const dni = document.getElementById('dniInput').value.trim();
-            if (dni.length < 8) return Swal.fire('DNI Requerido', 'Debe ingresar los 8 dígitos del menor.', 'info');
+            if (dni.length < 8) return Swal.fire('DNI Invalido', 'Ingrese los 8 dígitos correspondientes.', 'warning');
 
             Swal.fire({
-                title: 'Buscando en Registro',
-                html: 'Validando base de datos...',
+                title: 'Validando Padrón',
+                text: 'Buscando autorización en la base de datos...',
                 allowOutsideClick: false,
                 didOpen: () => Swal.showLoading()
             });
@@ -223,115 +174,159 @@
                 const response = await fetch(URL_CONSULTA);
                 const data = await response.json();
 
-                let registroEncontrado = null;
-                let nombreA_Mostrar = "";
+                // Búsqueda en el padrón por madre o por hijo
+                const registro = data.find(item => 
+                    String(item.dniMadre).trim() === dni || String(item.dniHijo).trim() === dni
+                );
 
-                const busquedaMadre = data.find(item => String(item.dniMadre).trim() === dni);
-                if (busquedaMadre) {
-                    registroEncontrado = busquedaMadre;
-                    nombreA_Mostrar = busquedaMadre.nombreMadre; 
-                } else {
-                    const busquedaHijo = data.find(item => String(item.dniHijo).trim() === dni);
-                    if (busquedaHijo) {
-                        registroEncontrado = busquedaHijo;
-                        nombreA_Mostrar = busquedaHijo.nombreHijo; 
-                    }
-                }
+                if (registro) {
+                    const nombreEncontrado = registro.nombreMadre || registro.nombreHijo || "PACIENTE REGISTRADO";
+                    document.getElementById('nombre_paciente').value = nombreEncontrado;
+                    document.getElementById('celular').value = registro.celular || "";
 
-                if (registroEncontrado) {
-                    document.getElementById('nombre_madre').value = nombreA_Mostrar || "No registrado";
-                    document.getElementById('celular').value = registroEncontrado.celular || "Sin celular";
-                    document.getElementById('domicilio').value = registroEncontrado.domicilio || "Sin dirección";
-                    document.getElementById('dni_madre_final').value = dni;
+                    // Cargar opciones desde la hoja PROGRAMA
+                    await cargarProgramaConfig();
 
                     document.getElementById('resultPanel').classList.remove('hidden');
                     document.getElementById('initialHelp').classList.add('hidden');
                     Swal.close();
                 } else {
                     Swal.fire({
-                        title: 'DNI No Identificado',
-                        html: `
-                            <div class="text-center p-2">
-                                <p class="mb-4 text-slate-600 text-sm">No logramos ubicar el registro solicitado. Actualice en el botón abajo:</p>
-                                <a href="https://desarrolloinfantiltemprano-dit.github.io/casita/" target="_blank"
-                                   class="inline-block bg-indigo-600 text-white px-5 py-3 rounded-xl font-bold hover:bg-indigo-700 transition-colors no-underline shadow-md">
-                                     <i class="fas fa-map-marker-alt mr-2"></i> REGISTRARME
-                                </a>
-                            </div>
-                        `,
-                        icon: 'info',
-                        showConfirmButton: false,
-                        showCloseButton: true
+                        icon: 'error',
+                        title: 'DNI No Autorizado',
+                        text: 'El DNI ingresado no se encuentra en el registro de consulta previa.',
+                        confirmButtonColor: '#4f46e5'
                     });
+                    document.getElementById('resultPanel').classList.add('hidden');
+                    document.getElementById('initialHelp').classList.remove('hidden');
                 }
-            } catch (error) {
-                Swal.fire('Error Operativo', 'Fallo en la comunicación con el servidor.', 'error');
+            } catch (err) {
+                Swal.fire('Error de Conexión', 'No se pudo validar el DNI contra la base de datos.', 'error');
             }
         }
 
-        async function procesarFormularioFinal() {
-            const dni = document.getElementById('dni_madre_final').value;
-            if (!dni) {
-                return Swal.fire('Atención', 'Por favor, busque un DNI válido primero.', 'warning');
+        // 2. Obtener la hoja PROGRAMA desde Apps Script
+        async function cargarProgramaConfig() {
+            try {
+                const res = await fetch(URL_DESTINO + "?action=obtenerPrograma");
+                const json = await res.json();
+                if (json.status === "success") {
+                    programaData = json.data;
+                    poblarConsultorios();
+                }
+            } catch (err) {
+                console.error("Error al cargar datos de PROGRAMA", err);
+            }
+        }
+
+        function poblarConsultorios() {
+            const select = document.getElementById('consultorio');
+            select.innerHTML = '<option value="" disabled selected>Seleccione Consultorio</option>';
+            const consultoriosUnicos = [...new Set(programaData.map(p => p.consultorio))];
+            consultoriosUnicos.forEach(c => {
+                select.innerHTML += `<option value="${c}">${c}</option>`;
+            });
+        }
+
+        function actualizarFechasDisponibles() {
+            const cons = document.getElementById('consultorio').value;
+            const selectFecha = document.getElementById('fecha_cita');
+            selectFecha.innerHTML = '<option value="" disabled selected>Seleccione Fecha</option>';
+            document.getElementById('hora_atencion').innerHTML = '<option value="" disabled selected>Seleccione Fecha</option>';
+
+            const fechasFiltradas = [...new Set(programaData.filter(p => p.consultorio === cons).map(p => p.fecha))];
+            fechasFiltradas.forEach(f => {
+                selectFecha.innerHTML += `<option value="${f}">${f}</option>`;
+            });
+        }
+
+        function actualizarHorasDisponibles() {
+            const cons = document.getElementById('consultorio').value;
+            const fecha = document.getElementById('fecha_cita').value;
+            const selectHora = document.getElementById('hora_atencion');
+            selectHora.innerHTML = '<option value="" disabled selected>Seleccione Hora</option>';
+
+            const horasFiltradas = programaData.filter(p => p.consultorio === cons && p.fecha === fecha).map(p => p.hora);
+            horasFiltradas.forEach(h => {
+                selectHora.innerHTML += `<option value="${h}">${h}</option>`;
+            });
+        }
+
+        // 3. Procesar Agendamiento
+        async function agendarCitaFinal() {
+            const dni = document.getElementById('dniInput').value.trim();
+            const nombre = document.getElementById('nombre_paciente').value;
+            const fnac = document.getElementById('fecha_nacimiento').value.trim();
+            const cel = document.getElementById('celular').value.trim();
+            const edad = document.getElementById('edad').value;
+            const consultorio = document.getElementById('consultorio').value;
+            const fechaCita = document.getElementById('fecha_cita').value;
+            const horaAtencion = document.getElementById('hora_atencion').value;
+
+            if (!fnac || !cel || !edad || !consultorio || !fechaCita || !horaAtencion) {
+                return Swal.fire('Campos Incompletos', 'Por favor complete todos los datos del formulario.', 'warning');
             }
 
-            const turnoSolicitado = document.querySelector('input[name="turno"]:checked').value;
-            const botonActivo = document.getElementById('btnCitaCompleta');
-            const textoOriginal = botonActivo.innerHTML;
-
-            botonActivo.disabled = true;
-            botonActivo.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> PROCESANDO...';
-
             const payload = {
-                dni_madre: dni,
-                nombre_madre: document.getElementById('nombre_madre').value,
-                estado_civil: document.getElementById('estado_civil').value,
-                celular: document.getElementById('celular').value,
-                turno: turnoSolicitado,
-                // Parámetros de sueño neutralizados por compatibilidad con la hoja de cálculo receptora
-                sueno_horas: "No evaluado",
-                sueno_estado: "No evaluado",
-                sueno_alerta: "No"
+                dni_paciente: dni,
+                nombre_paciente: nombre,
+                fecha_nacimiento: fnac,
+                celular: cel,
+                edad: edad,
+                consultorio: consultorio,
+                fecha_cita: fechaCita,
+                hora_atencion: horaAtencion
             };
+
+            const btn = document.getElementById('btnAgendar');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> PROCESANDO...';
 
             try {
                 const response = await fetch(URL_DESTINO, {
                     method: 'POST',
                     body: JSON.stringify(payload)
                 });
+                const result = await response.json();
 
-                const resultText = await response.text();
-
-                if (resultText.includes("ERROR: Sin cupos")) {
+                if (result.status === "error_cupos") {
+                    // Aviso Elegante de Sin Cupos
                     Swal.fire({
                         icon: 'warning',
-                        title: 'Cupos Agotados',
-                        text: `Lo sentimos, ya se han ocupado los cupos institucionales del turno ${turnoSolicitado}.`,
+                        title: '¡Cupos Agotados!',
+                        html: `
+                            <div class="p-2">
+                                <p class="text-slate-600 font-medium">No quedan cupos disponibles para:</p>
+                                <div class="my-3 p-3 bg-amber-50 border border-amber-200 rounded-xl text-left text-sm text-amber-900 space-y-1">
+                                    <p><strong>Consultorio:</strong> ${consultorio}</p>
+                                    <p><strong>Fecha:</strong> ${fechaCita}</p>
+                                    <p><strong>Horario:</strong> ${horaAtencion}</p>
+                                </div>
+                                <p class="text-xs text-slate-500">Por favor, seleccione otra fecha u horario disponible.</p>
+                            </div>
+                        `,
+                        confirmButtonText: 'Entendido',
                         confirmButtonColor: '#f59e0b'
                     });
-                } else {
-                    await Swal.fire({
+                } else if (result.status === "success") {
+                    Swal.fire({
                         icon: 'success',
-                        title: '¡Cita Agendada!',
-                        text: 'La fecha y horario de su cita se le estará confirmando a su whatsApp',
+                        title: '¡Cita Confirmada!',
+                        text: 'La cita ha sido registrada exitosamente en la base de datos.',
                         confirmButtonColor: '#4f46e5'
                     });
-                    limpiarFormularioCompleto();
+                    document.getElementById('appointmentForm').reset();
+                    document.getElementById('resultPanel').classList.add('hidden');
+                    document.getElementById('initialHelp').classList.remove('hidden');
+                } else {
+                    Swal.fire('Error', result.message || 'Ocurrió un inconveniente al procesar.', 'error');
                 }
-
             } catch (err) {
-                Swal.fire('Envío Confirmado', 'Registro almacenado. Verifique su base en la hoja de cálculo vinculada.', 'info');
-                limpiarFormularioCompleto();
+                Swal.fire('Error de Red', 'No se pudo comunicar con el servidor.', 'error');
             } finally {
-                botonActivo.disabled = false;
-                botonActivo.innerHTML = textoOriginal;
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-calendar-check mr-2"></i> AGENDAR CITA';
             }
-        }
-
-        function limpiarFormularioCompleto() {
-            document.getElementById('appointmentForm').reset();
-            document.getElementById('resultPanel').classList.add('hidden');
-            document.getElementById('initialHelp').classList.remove('hidden');
         }
     </script>
 </body>
