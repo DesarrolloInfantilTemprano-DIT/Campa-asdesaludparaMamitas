@@ -237,7 +237,7 @@
             }
 
             Swal.fire({
-                title: 'Buscando en el padrón...',
+                title: 'Verificando el DNI...',
                 text: 'Por favor espere un momento 🎈',
                 allowOutsideClick: false,
                 didOpen: () => Swal.showLoading()
@@ -300,7 +300,7 @@
                     Swal.fire({
                         icon: 'error',
                         title: 'DNI No Encontrado',
-                        text: 'El DNI no fue localizado en la Columna B (Madre) ni en la Columna H (Niño).',
+                        text: 'Es necesario que actualice sus datos desde el Módulo Mi Familia, recuerde primero activar su ubicación).',
                         confirmButtonColor: '#06b6d4'
                     });
                 }
@@ -459,7 +459,7 @@
                     Swal.fire({
                         icon: 'success',
                         title: '¡Cita Agendada! 🎉',
-                        text: 'La cita ha sido guardada exitosamente.',
+                        text: 'Acuda a la hora de cita, no hay reprogramación.',
                         confirmButtonColor: '#10b981'
                     });
                     document.getElementById('appointmentForm').reset();
