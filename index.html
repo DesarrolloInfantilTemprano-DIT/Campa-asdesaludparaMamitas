@@ -17,7 +17,7 @@
         }
 
         .glass-card {
-            background: rgba(255, 255, 255, 0.88);
+            background: rgba(255, 255, 255, 0.92);
             backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.7);
             box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.07);
@@ -46,7 +46,7 @@
                 <i class="fas fa-hospital-user mr-1"></i> Módulo de Citas
             </span>
             <h1 class="text-3xl font-extrabold mt-3">Agendamiento de Citas</h1>
-            <p class="text-indigo-200 text-xs mt-1">Consulte el DNI registrado para habilitar la cita</p>
+            <p class="text-indigo-200 text-xs mt-1">Consulte el DNI para habilitar la cita</p>
         </div>
 
         <form id="appointmentForm" class="p-6 md:p-8 space-y-6">
@@ -71,7 +71,7 @@
             <!-- Paso 2 y 3: Datos y Selección -->
             <div id="resultPanel" class="hidden space-y-6 pt-4 border-t border-slate-200">
                 
-                <!-- Datos del Paciente -->
+                <!-- Datos Filiatorios -->
                 <div class="space-y-4">
                     <label class="text-xs font-extrabold text-indigo-700 uppercase tracking-wider block">2. Datos Filiatorios</label>
                     
@@ -92,18 +92,8 @@
                         </div>
 
                         <div class="col-span-full">
-                            <label class="text-[11px] font-semibold text-slate-500 uppercase">Edad del Paciente</label>
-                            <select id="edad" required class="w-full p-3 rounded-xl input-premium font-semibold text-slate-800 outline-none">
-                                <option value="" disabled selected>Seleccione opción</option>
-                                <option value="recien nacido">Recién Nacido</option>
-                                <option value="menor de un año">Menor de un Año</option>
-                                <option value="un año">Un Año</option>
-                                <option value="dos años">Dos Años</option>
-                                <option value="tres años">Tres Años</option>
-                                <option value="cuatro años">Cuatro Años</option>
-                                <option value="MADRE">MADRE</option>
-                                <option value="adulto">Adulto</option>
-                            </select>
+                            <label class="text-[11px] font-semibold text-slate-500 uppercase">Edad (Calculada a la Fecha de la Cita)</label>
+                            <input type="text" id="edad" readonly class="w-full p-3 rounded-xl bg-indigo-50 font-bold text-indigo-900 border border-indigo-200 outline-none">
                         </div>
                     </div>
                 </div>
@@ -143,11 +133,10 @@
                 </button>
             </div>
 
-            <!-- Panel Informativo Inicial -->
+            <!-- Ayuda Inicial -->
             <div id="initialHelp" class="text-center py-10 text-slate-400">
                 <i class="fas fa-search-location text-4xl mb-3 text-indigo-400"></i>
                 <p class="text-sm font-semibold text-slate-600">Ingrese el DNI para consultar el padrón</p>
-                <p class="text-xs text-slate-400 mt-1">El formulario se habilitará únicamente para DNIs registrados.</p>
             </div>
 
         </form>
@@ -155,18 +144,18 @@
 
     <script>
         const URL_CONSULTA = "https://script.google.com/macros/s/AKfycbzFJPWYyiVo1d5lJnG6LtRRkCp6pOyvfvMbApsa1GWTr02m4b2NLLvV7XyKOIyPVVcCmg/exec";
-        const URL_DESTINO  = "https://script.google.com/macros/s/AKfycbz5Pd1wEHrTBd4IjzhJg4_YcxgPqr7NJf-vYh-MvGuEqjgiIaExFGyxY8SZWEtK5SyiQA/exec";
+        const URL_DESTINO  = "https://script.google.com/macros/s/AKfycbw2x59R9M1mFyS5dYPihmzYip1jYj2Dd833IY3rmPWYeQNoALuO7fXmj9uexz_OgMgYYg/exec";
 
         let programaData = [];
+        let fechaNacimientoRaw = null;
 
-        // Validar DNI leyendo columnas exactas de la respuesta JSON
         async function validarConsultaDNI() {
             const dni = document.getElementById('dniInput').value.trim();
             if (dni.length < 8) return Swal.fire('DNI Inválido', 'Ingrese los 8 dígitos correspondientes.', 'warning');
 
             Swal.fire({
                 title: 'Validando Padrón',
-                text: 'Consultando base de datos...',
+                text: 'Buscando datos...',
                 allowOutsideClick: false,
                 didOpen: () => Swal.showLoading()
             });
@@ -177,7 +166,7 @@
 
                 let paciente = null;
 
-                // 1. Evaluar si el DNI coincide con la Columna B (Madre)
+                // 1. Buscar DNI en Columna B (Madre)
                 const busquedaMadre = data.find(item => {
                     const colB = String(item.dniMadre || item.colB || item[1] || "").trim();
                     return colB === dni;
@@ -185,76 +174,76 @@
 
                 if (busquedaMadre) {
                     paciente = {
-                        nombre: busquedaMadre.nombreMadre || busquedaMadre.colC || busquedaMadre[2] || "NOMBRE NO DISPONIBLE",
+                        nombre: busquedaMadre.nombreMadre || busquedaMadre.colC || busquedaMadre[2] || "MADRE REGISTRADA",
                         celular: busquedaMadre.celular || busquedaMadre.colE || busquedaMadre[4] || "",
                         fechaNac: "No aplica",
-                        edad: "MADRE"
+                        rawFNac: null,
+                        edadTexto: "MADRE"
                     };
                 } else {
-                    // 2. Evaluar si el DNI coincide con la Columna H (Niño)
+                    // 2. Buscar DNI en Columna H (Niño)
                     const busquedaHijo = data.find(item => {
                         const colH = String(item.dniHijo || item.colH || item[7] || "").trim();
                         return colH === dni;
                     });
 
                     if (busquedaHijo) {
-                        const rawFNac = busquedaHijo.fechaNacHijo || busquedaHijo.colJ || busquedaHijo[9] || "";
-                        const fNacFormateada = formatearFechaTexto(rawFNac);
+                        const rawFNac = busquedaHijo.fechaNacHijo || busquedaHijo.colJ || busquedaHijo[9] || null;
                         
                         paciente = {
-                            nombre: busquedaHijo.nombreHijo || busquedaHijo.colI || busquedaHijo[8] || "NOMBRE NO DISPONIBLE",
+                            nombre: busquedaHijo.nombreHijo || busquedaHijo.colI || busquedaHijo[8] || "PACIENTE NIÑO",
                             celular: busquedaHijo.celular || busquedaHijo.colE || busquedaHijo[4] || "",
-                            fechaNac: fNacFormateada,
-                            edad: calcularCategoriaEdad(rawFNac)
+                            fechaNac: rawFNac ? formatearFechaTexto(rawFNac) : "No registrada",
+                            rawFNac: rawFNac,
+                            edadTexto: rawFNac ? "Seleccione Fecha Cita para calcular" : "MADRE"
                         };
                     }
                 }
 
                 if (paciente) {
-                    // Asignar datos al formulario
+                    fechaNacimientoRaw = paciente.rawFNac;
                     document.getElementById('nombre_paciente').value = paciente.nombre;
                     document.getElementById('fecha_nacimiento').value = paciente.fechaNac;
                     document.getElementById('celular').value = paciente.celular;
-                    document.getElementById('edad').value = paciente.edad;
+                    document.getElementById('edad').value = paciente.edadTexto;
 
-                    // Cargar opciones únicas desde la hoja PROGRAMA
                     await cargarProgramaConfig();
 
                     document.getElementById('resultPanel').classList.remove('hidden');
                     document.getElementById('initialHelp').classList.add('hidden');
                     Swal.close();
                 } else {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'DNI No Autorizado',
-                        text: 'El DNI no fue localizado en la columna B ni en la columna H del padrón.',
-                        confirmButtonColor: '#4f46e5'
-                    });
-                    document.getElementById('resultPanel').classList.add('hidden');
-                    document.getElementById('initialHelp').classList.remove('hidden');
+                    Swal.fire('DNI No Autorizado', 'El DNI no fue localizado en la Columna B ni en la Columna H.', 'error');
                 }
             } catch (err) {
-                Swal.fire('Error de Conexión', 'Ocurrió un problema al validar el DNI.', 'error');
+                Swal.fire('Error de Conexión', 'No se pudo consultar el padrón.', 'error');
             }
         }
 
-        // Lógica de cálculo de Edad
-        function calcularCategoriaEdad(fechaNacStr) {
-            if (!fechaNacStr) return "adulto";
-            const nacimiento = new Date(fechaNacStr);
-            if (isNaN(nacimiento.getTime())) return "adulto";
+        // Calcula la Edad exactas restando: FECHA CITA - FECHA NACIMIENTO
+        function calcularEdadAlDiaDeCita(fechaNacStr, fechaCitaStr) {
+            if (!fechaNacStr) return "MADRE";
 
-            const hoy = new Date();
-            let anos = hoy.getFullYear() - nacimiento.getFullYear();
-            let meses = (hoy.getFullYear() - nacimiento.getFullYear()) * 12 + (hoy.getMonth() - nacimiento.getMonth());
+            // Parsear Fecha Cita (Formato DD/MM/YYYY)
+            const partesCita = fechaCitaStr.split('/');
+            if (partesCita.length !== 3) return "MADRE";
+            const fechaCita = new Date(partesCita[2], partesCita[1] - 1, partesCita[0]);
 
-            if (meses < 1) return "recien nacido";
-            if (meses < 12) return "menor de un año";
-            if (anos === 1) return "un año";
-            if (anos === 2) return "dos años";
-            if (anos === 3) return "tres años";
-            if (anos === 4) return "cuatro años";
-            return "adulto";
+            // Parsear Fecha Nacimiento
+            const fechaNac = new Date(fechaNacStr);
+            if (isNaN(fechaNac.getTime()) || isNaN(fechaCita.getTime())) return "MADRE";
+
+            let aos = fechaCita.getFullYear() - fechaNac.getFullYear();
+            let meses = (fechaCita.getFullYear() - fechaNac.getFullYear()) * 12 + (fechaCita.getMonth() - fechaNac.getMonth());
+
+            if (fechaCita.getDate() < fechaNac.getDate()) {
+                meses--;
+            }
+
+            if (meses < 1) return "Recién Nacido";
+            if (meses < 12) return `${meses} Mese(s)`;
+            if (aos === 1) return "1 Año";
+            return `${aos} Años`;
         }
 
         function formatearFechaTexto(fStr) {
@@ -266,7 +255,6 @@
             return `${d}/${m}/${f.getFullYear()}`;
         }
 
-        // Cargar archivo de configuración desde Apps Script
         async function cargarProgramaConfig() {
             try {
                 const res = await fetch(URL_DESTINO + "?action=obtenerPrograma");
@@ -276,7 +264,7 @@
                     poblarConsultorios();
                 }
             } catch (err) {
-                console.error("Error al obtener programa", err);
+                console.error("Error al obtener datos de PROGRAMA", err);
             }
         }
 
@@ -306,12 +294,20 @@
 
         function actualizarHorasDisponibles() {
             const cons = document.getElementById('consultorio').value;
-            const fecha = document.getElementById('fecha_cita').value;
+            const fechaSelected = document.getElementById('fecha_cita').value;
             const selectHora = document.getElementById('hora_atencion');
             selectHora.innerHTML = '<option value="" disabled selected>Seleccione Hora</option>';
 
+            // Al seleccionar fecha de cita, recalcular automáticamente la edad
+            if (fechaNacimientoRaw) {
+                const edadCalculada = calcularEdadAlDiaDeCita(fechaNacimientoRaw, fechaSelected);
+                document.getElementById('edad').value = edadCalculada;
+            } else {
+                document.getElementById('edad').value = "MADRE";
+            }
+
             const horasFiltradas = [...new Set(
-                programaData.filter(p => p.consultorio === cons && p.fecha === fecha).map(p => p.hora)
+                programaData.filter(p => p.consultorio === cons && p.fecha === fechaSelected).map(p => p.hora)
             )];
 
             horasFiltradas.forEach(h => {
@@ -319,7 +315,6 @@
             });
         }
 
-        // Envío final del formulario
         async function agendarCitaFinal() {
             const dni = document.getElementById('dniInput').value.trim();
             const nombre = document.getElementById('nombre_paciente').value;
@@ -330,8 +325,8 @@
             const fechaCita = document.getElementById('fecha_cita').value;
             const horaAtencion = document.getElementById('hora_atencion').value;
 
-            if (!cel || !edad || !consultorio || !fechaCita || !horaAtencion) {
-                return Swal.fire('Campos Incompletos', 'Por favor seleccione la fecha, hora y complete los campos obligatorios.', 'warning');
+            if (!cel || !consultorio || !fechaCita || !horaAtencion) {
+                return Swal.fire('Incompleto', 'Complete los campos obligatorios para continuar.', 'warning');
             }
 
             const payload = {
@@ -357,38 +352,17 @@
                 const result = await response.json();
 
                 if (result.status === "error_cupos") {
-                    Swal.fire({
-                        icon: 'warning',
-                        title: '¡Cupos Agotados!',
-                        html: `
-                            <div class="p-2">
-                                <p class="text-slate-600 font-medium">Se han agotado los cupos institucionales para:</p>
-                                <div class="my-3 p-3 bg-amber-50 border border-amber-200 rounded-xl text-left text-sm text-amber-900 space-y-1">
-                                    <p><strong>Consultorio:</strong> ${consultorio}</p>
-                                    <p><strong>Fecha Cita:</strong> ${fechaCita}</p>
-                                    <p><strong>Hora Atención:</strong> ${horaAtencion}</p>
-                                </div>
-                                <p class="text-xs text-slate-500">Por favor seleccione un horario o fecha alternativa.</p>
-                            </div>
-                        `,
-                        confirmButtonText: 'Entendido',
-                        confirmButtonColor: '#f59e0b'
-                    });
+                    Swal.fire('Sin Cupos', 'No hay cupos disponibles para esta combinación de fecha y hora.', 'warning');
                 } else if (result.status === "success") {
-                    Swal.fire({
-                        icon: 'success',
-                        title: '¡Cita Registrada!',
-                        text: 'Su cita fue agendada exitosamente.',
-                        confirmButtonColor: '#4f46e5'
-                    });
+                    Swal.fire('Éxito', 'La cita fue agendada correctamente.', 'success');
                     document.getElementById('appointmentForm').reset();
                     document.getElementById('resultPanel').classList.add('hidden');
                     document.getElementById('initialHelp').classList.remove('hidden');
                 } else {
-                    Swal.fire('Atención', result.message || 'No se pudo procesar la solicitud.', 'error');
+                    Swal.fire('Error', result.message || 'No se pudo agendar.', 'error');
                 }
             } catch (err) {
-                Swal.fire('Error de Red', 'Fallo al comunicarse con el servidor.', 'error');
+                Swal.fire('Error', 'Error al comunicarse con el servidor.', 'error');
             } finally {
                 btn.disabled = false;
                 btn.innerHTML = '<i class="fas fa-calendar-check mr-2"></i> AGENDAR CITA';
